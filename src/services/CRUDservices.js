@@ -1,15 +1,14 @@
 import db from "../models/index";
-import bcryptjs from "bcryptjs";
 import bcrypt from "bcryptjs";
 const salt = bcrypt.genSaltSync(10);
 
 let creatNewUser = async (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let passwordHashed = await hashUserPassword(data.password);
+      let hashPassWord = await bcrypt.hashSync(data.password, salt);
       await db.User.create({
         email: data.email,
-        password: passwordHashed,
+        password: hashPassWord,
         firstName: data.firstName,
         lastName: data.lastName,
         address: data.address,
