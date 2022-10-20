@@ -101,7 +101,7 @@ const createUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       let check = await checkUserEmail(data.email);
-      if (!check) {
+      if (!check && data.email) {
         let hashPassWord = await hashUserPassword(data.password);
         await db.User.create({
           email: data.email,
@@ -120,7 +120,7 @@ const createUser = (data) => {
       } else {
         resolve({
           errCode: 1,
-          message: "Email is already in used, please try another email!!",
+          errMessage: "Email is already in used, please try another email!!",
         });
       }
     } catch (e) {
