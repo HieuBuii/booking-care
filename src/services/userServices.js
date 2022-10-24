@@ -159,7 +159,6 @@ const deleteUser = (userId) => {
 const editUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(data);
       if (!data.id || !data.roleId || !data.positionId || !data.gender) {
         resolve({
           errCode: 1,
@@ -178,6 +177,9 @@ const editUser = (data) => {
           user.gender = data.gender;
           user.positionId = data.positionId;
           user.roleId = data.roleId;
+          if (data.image) {
+            user.image = data.image;
+          }
 
           await user.save();
 
