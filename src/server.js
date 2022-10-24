@@ -9,6 +9,7 @@ require("dotenv").config();
 let app = express();
 
 app.use(function (req, res, next) {
+  //fix cors
   // Website you wish to allow to connect
   res.setHeader("Access-Control-Allow-Origin", process.env.URL_REACT);
 
