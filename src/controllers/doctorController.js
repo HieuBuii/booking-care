@@ -53,9 +53,38 @@ const getInfoDoctor = async (req, res) => {
   }
 };
 
+const saveCreateSchedule = async (req, res) => {
+  try {
+    let info = await doctorServices.saveCreateScheduleService(req.body);
+    return res.status(200).json(info);
+  } catch (e) {
+    return res.status(200).json({
+      errCode: -1,
+      message: "Error from server !!",
+    });
+  }
+};
+
+const getScheduleDoctor = async (req, res) => {
+  try {
+    let dateArr = await doctorServices.getScheduleDoctorService(
+      req.query.doctorId,
+      req.query.date
+    );
+    return res.status(200).json(dateArr);
+  } catch (e) {
+    return res.status(200).json({
+      errCode: -1,
+      message: "Error from server !!",
+    });
+  }
+};
+
 module.exports = {
   getTopDoctorForHome,
   getAllDoctors,
   saveInfoDoctor,
   getInfoDoctor,
+  saveCreateSchedule,
+  getScheduleDoctor,
 };
