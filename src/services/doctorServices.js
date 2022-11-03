@@ -60,18 +60,6 @@ const getAllDoctorsService = () => {
 const saveInfoDoctorService = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // let arrRequired = [
-      //   "contentHTML",
-      //   "contentMarkdown",
-      //   "description",
-      //   "doctorId",
-      //   "priceId",
-      //   "paymentId",
-      //   "proviceId",
-      //   "nameClinic",
-      //   "addressClinic",
-      //   "note",
-      // ];
       if (
         !inputData.doctorId ||
         !inputData.contentHTML ||
@@ -86,13 +74,13 @@ const saveInfoDoctorService = (inputData) => {
       ) {
         resolve({ errCode: 1, errMessage: "Missing required parameter !!" });
       } else {
-        let doctor = await db.Markdown.findOne({
+        let doctor = await db.Doctor_intro.findOne({
           where: { doctorId: inputData.doctorId },
           raw: false,
         });
         //markdown
         if (!doctor) {
-          await db.Markdown.create({
+          await db.Doctor_intro.create({
             contentHTML: inputData.contentHTML,
             contentMarkdown: inputData.contentMarkdown,
             description: inputData.description,
@@ -162,8 +150,31 @@ const getInfoDoctorService = (id) => {
               attributes: ["valueVi", "valueEn"],
             },
             {
-              model: db.Markdown,
+              model: db.Doctor_intro,
               attributes: ["description", "contentMarkdown", "contentHTML"],
+            },
+            {
+              model: db.Doctor_info,
+              attributes: {
+                exclude: ["id", "doctorId"],
+              },
+              include: [
+                {
+                  model: db.Allcode,
+                  as: "priceTypeData",
+                  attributes: ["valueVi", "valueEn"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "provinceTypeData",
+                  attributes: ["valueVi", "valueEn"],
+                },
+                {
+                  model: db.Allcode,
+                  as: "paymentTypeData",
+                  attributes: ["valueVi", "valueEn"],
+                },
+              ],
             },
           ],
           raw: false,
@@ -256,6 +267,58 @@ const getScheduleDoctorService = (doctorId, date) => {
               as: "timeTypeData",
               attributes: ["valueVi", "valueEn"],
             },
+            {
+              model: db.User,
+              as: "doctorData",
+              attributes: ["firstName", "lastName"],
+            },
+          ],
+          raw: false,
+          nest: true,
+        });
+        if (!data) {
+          data = [];
+        }
+        resolve({
+          errCode: 0,
+          data: data,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const getExtraDoctorInfoService = (doctorId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!doctorId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters !!",
+        });
+      } else {
+        let data = await db.Doctor_info.findOne({
+          where: {
+            doctorId: doctorId,
+          },
+          include: [
+            {
+              model: db.Allcode,
+              as: "priceTypeData",
+              attributes: ["valueVi", "valueEn"],
+            },
+            {
+              model: db.Allcode,
+              as: "paymentTypeData",
+              attributes: ["valueVi", "valueEn"],
+            },
+            {
+              model: db.Allcode,
+              as: "provinceTypeData",
+              attributes: ["valueVi", "valueEn"],
+            },
           ],
           raw: false,
           nest: true,
@@ -281,4 +344,5 @@ module.exports = {
   getInfoDoctorService,
   saveCreateScheduleService,
   getScheduleDoctorService,
+  getExtraDoctorInfoService,
 };
