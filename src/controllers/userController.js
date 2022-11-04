@@ -87,18 +87,31 @@ const postChangeUserPW = async (req, res) => {
   }
 };
 
-// const postForgotPW = async (req, res) => {
-//   try {
-//     let response = await userServices.postForgotPWService(req.body);
-//     return res.status(200).json(response);
-//   } catch (e) {
-//     console.log(e);
-//     return res.status(200).json({
-//       errCode: -1,
-//       message: "Error from server !!",
-//     });
-//   }
-// };
+const postForgotPW = async (req, res) => {
+  try {
+    let response = await userServices.postForgotPWService(req.body);
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      message: "Error from server !!",
+    });
+  }
+};
+
+const postVeryfyForgotPW = async (req, res) => {
+  try {
+    let response = await userServices.postVeryfyForgotPWService(req.body);
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      message: "Error from server !!",
+    });
+  }
+};
 
 module.exports = {
   handleLogin,
@@ -108,5 +121,6 @@ module.exports = {
   handleDeleteUser,
   getAllCode,
   postChangeUserPW,
-  // postForgotPW
+  postForgotPW,
+  postVeryfyForgotPW,
 };

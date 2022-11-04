@@ -1,6 +1,132 @@
 import db from "../models/index";
 import bcrypt from "bcryptjs";
 const salt = bcrypt.genSaltSync(10);
+import { v4 as uuidv4 } from "uuid";
+import mailServices from "./mailServices";
+
+const buildURLVerifyEmail = (userEmail, token) => {
+  let result = `${process.env.URL_REACT}/forgot-password?token=${token}&email=${userEmail}`;
+  return result;
+};
+
+let arr = [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  0,
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "J",
+  "K",
+  "G",
+  "H",
+  "M",
+  "N",
+  "Q",
+  "P",
+  "R",
+  "L",
+  "T",
+  "Y",
+  "U",
+  "I",
+  "O",
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "j",
+  "k",
+  "l",
+  "m",
+  "n",
+  "v",
+  "z",
+  "x",
+  "X",
+  "o",
+  "p",
+  "i",
+  "u",
+  "y",
+];
+
+// const randomPW = () => {
+//   let arr = [
+//     1,
+//     2,
+//     3,
+//     4,
+//     5,
+//     6,
+//     7,
+//     8,
+//     9,
+//     0,
+//     "A",
+//     "B",
+//     "C",
+//     "D",
+//     "E",
+//     "F",
+//     "J",
+//     "K",
+//     "G",
+//     "H",
+//     "M",
+//     "N",
+//     "Q",
+//     "P",
+//     "R",
+//     "L",
+//     "T",
+//     "Y",
+//     "U",
+//     "I",
+//     "O",
+//     "a",
+//     "b",
+//     "c",
+//     "d",
+//     "e",
+//     "f",
+//     "g",
+//     "h",
+//     "j",
+//     "k",
+//     "l",
+//     "m",
+//     "n",
+//     "v",
+//     "z",
+//     "x",
+//     "X",
+//     "o",
+//     "p",
+//     "i",
+//     "u",
+//     "y",
+//   ];
+//   let randomPW = "";
+//   for (let i = 0; i < 6; i++) {
+//     randomPW += arr[Math.floor(Math.random() * arr.length)];
+//   }
+//   return randomPW;
+// };
 
 let hashUserPassword = async (password) => {
   return new Promise(async (resolve, reject) => {
@@ -272,7 +398,91 @@ const postChangeUserPWService = (inputData) => {
   });
 };
 
-// const postForgotPWService =
+const postForgotPWService = (inputData) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!inputData.email) {
+        resolve({ errCode: 1, errMessage: "Missing required parameter !!" });
+      }
+      let user = await db.User.findOne({
+        where: { email: inputData.email },
+        raw: false,
+      });
+      if (user) {
+        let token = uuidv4();
+        user.token = token;
+        await user.save();
+        //build mail
+        await mailServices.sendEmailConfirmForgotPW({
+          email: inputData.email,
+          firstName: user.firstName,
+          link: buildURLVerifyEmail(inputData.email, token),
+        });
+        resolve({
+          errCode: 0,
+          message: "OK",
+        });
+      } else {
+        resolve({
+          errCode: 2,
+          errMessage: "User not found",
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const postVeryfyForgotPWService = (inputData) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!inputData.token || !inputData.email) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters !!",
+        });
+      } else {
+        let user = await db.User.findOne({
+          where: {
+            email: inputData.email,
+            token: inputData.token,
+          },
+          raw: false,
+        });
+        if (user) {
+          let randomPW = "";
+          for (let i = 0; i < 6; i++) {
+            randomPW += arr[Math.floor(Math.random() * arr.length)];
+          }
+          let hashPassWord = await hashUserPassword(randomPW);
+
+          //build mail
+          await mailServices.sendEmailGiveNewPW({
+            email: inputData.email,
+            firstName: user.firstName,
+            randomPW: randomPW,
+          });
+          let token = uuidv4();
+          user.password = hashPassWord;
+          user.token = token;
+          await user.save();
+          resolve({
+            errCode: 0,
+            message: "Update user succeed!!",
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: "user does not exits or has been actived !!",
+          });
+        }
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
 module.exports = {
   handleUserLogin,
@@ -282,5 +492,6 @@ module.exports = {
   editUser,
   getAllCodeService,
   postChangeUserPWService,
-  // postForgotPWService
+  postForgotPWService,
+  postVeryfyForgotPWService,
 };

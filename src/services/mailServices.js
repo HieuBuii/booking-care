@@ -55,6 +55,72 @@ const buildContentEmail = (dataSend) => {
   return content;
 };
 
+const sendEmailConfirmForgotPW = async (dataSend) => {
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.GMAIL_USER_NAME, // generated ethereal user
+      pass: process.env.GMAIL_PASSWORD, // generated ethereal password
+    },
+  });
+
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: '"Health Care" <bt.hieuBVT145@gmail.com>', // sender address
+    to: dataSend.email, // list of receivers
+    subject: "Xác minh quên mật khẩu ✔", // Subject line
+    html: buildContentEmailForgot(dataSend),
+  });
+};
+
+const buildContentEmailForgot = (dataSend) => {
+  let content = `<h3>Xin chào ${dataSend.firstName}</h3>
+    <p>Bạn nhận được Email này bởi vì chúng tôi nhận thấy bạn đã tiến hành yêu cầu quên mật khẩu trên trang web
+    Heath Care.</p>
+    <p>Nếu thông tin trên là đúng, vui lòng nhấn vào đường link bên dưới để xác nhận và hoàn tất đặt lại mật khẩu.</p>
+    <a href= ${dataSend.link} target="_blank">Click here</a>
+    <p>Xin cảm ơn quý khách vì đã lựa chọn sử dụng dịch vụ của Heath Care ♥♥</p>
+`;
+  return content;
+};
+
+const sendEmailGiveNewPW = async (dataSend) => {
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.GMAIL_USER_NAME, // generated ethereal user
+      pass: process.env.GMAIL_PASSWORD, // generated ethereal password
+    },
+  });
+
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: '"Health Care" <bt.hieuBVT145@gmail.com>', // sender address
+    to: dataSend.email, // list of receivers
+    subject: "Mật khẩu mới ✔", // Subject line
+    html: buildContentGiveNewPW(dataSend),
+  });
+};
+
+const buildContentGiveNewPW = (dataSend) => {
+  let content = `<h3>Xin chào ${dataSend.firstName}</h3>
+    <p>Bạn nhận được Email này bởi vì chúng tôi nhận thấy bạn đã tiến hành xác thực yêu cầu quên mật khẩu trên trang web
+    Heath Care.</p>
+    <p>Mật khẩu mới của bạn là:.</p>
+    <p><b>${dataSend.randomPW}</b></p>
+    <p>Xin cảm ơn quý khách vì đã lựa chọn sử dụng dịch vụ của Heath Care ♥♥</p>
+`;
+  return content;
+};
+
 module.exports = {
   sendEmailConfirmBooking,
+  sendEmailConfirmForgotPW,
+  sendEmailGiveNewPW,
 };

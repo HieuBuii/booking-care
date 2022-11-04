@@ -10,24 +10,31 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       password: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       firstName: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       lastName: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       address: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       phonenumber: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       gender: {
         type: Sequelize.STRING,
+        allowNull: false,
       },
       image: {
         type: Sequelize.BLOB("long"),
@@ -37,6 +44,9 @@ module.exports = {
       },
       positionId: {
         type: Sequelize.STRING,
+      },
+      token: {
+        type: Sequelize.TEXT,
       },
       createdAt: {
         allowNull: false,

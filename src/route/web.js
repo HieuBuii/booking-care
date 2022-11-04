@@ -23,7 +23,8 @@ let initWebRoutes = (app) => {
   router.delete("/api/delete-user", userController.handleDeleteUser);
   router.get("/api/allcode", userController.getAllCode);
   router.post("/api/change-user-pw", userController.postChangeUserPW);
-  // router.post("/api/forgot-pw", userController.postForgotPW);
+  router.post("/api/forgot-pw", userController.postForgotPW);
+  router.post("/api/verify-forgot-pw", userController.postVeryfyForgotPW);
 
   router.get("/api/top-doctor-home", doctorController.getTopDoctorForHome);
   router.get("/api/get-all-doctocs", doctorController.getAllDoctors);
