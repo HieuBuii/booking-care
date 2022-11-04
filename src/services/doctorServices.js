@@ -220,13 +220,6 @@ const saveCreateScheduleService = (data) => {
           attributes: ["timeType", "date", "maxNumber", "doctorId"],
         });
 
-        // if (isExits && isExits.length > 0) {
-        //   isExits = isExits.map((item) => {
-        //     item.date = new Date(item.date).getTime();
-        //     return item;
-        //   });
-        // }
-
         let toCreate = _.differenceWith(schedule, isExits, (a, b) => {
           return a.timeType === b.timeType && +a.date === +b.date;
         });
@@ -337,6 +330,38 @@ const getExtraDoctorInfoService = (doctorId) => {
   });
 };
 
+const deleteScheduleDoctorService = (idSchedule) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!idSchedule) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters!!",
+        });
+      } else {
+        let schedule = await db.Schedule.findOne({
+          where: { id: idSchedule },
+          raw: false,
+        });
+        if (schedule) {
+          await schedule.destroy();
+          resolve({
+            errCode: 0,
+            message: "Delete schedule successed!!",
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: "Schedule is not found!!",
+          });
+        }
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   getTopDoctorService,
   getAllDoctorsService,
@@ -345,4 +370,5 @@ module.exports = {
   saveCreateScheduleService,
   getScheduleDoctorService,
   getExtraDoctorInfoService,
+  deleteScheduleDoctorService,
 };

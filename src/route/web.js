@@ -29,6 +29,10 @@ let initWebRoutes = (app) => {
   router.get("/api/get-info-doctor", doctorController.getInfoDoctor);
   router.post("/api/save-schedule", doctorController.saveCreateSchedule);
   router.get("/api/schedule-doctor", doctorController.getScheduleDoctor);
+  router.delete(
+    "/api/delete-schedule-doctor",
+    doctorController.deleteScheduleDoctor
+  );
   router.get("/api/extra-doctor-info", doctorController.getExtraDoctorInfo);
 
   router.post("/api/patient-booking", patientController.savePatientBooking);
