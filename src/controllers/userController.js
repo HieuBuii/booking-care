@@ -74,11 +74,39 @@ const getAllCode = async (req, res) => {
   }
 };
 
+const postChangeUserPW = async (req, res) => {
+  try {
+    let response = await userServices.postChangeUserPWService(req.body);
+    return res.status(200).json(response);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      message: "Error from server !!",
+    });
+  }
+};
+
+// const postForgotPW = async (req, res) => {
+//   try {
+//     let response = await userServices.postForgotPWService(req.body);
+//     return res.status(200).json(response);
+//   } catch (e) {
+//     console.log(e);
+//     return res.status(200).json({
+//       errCode: -1,
+//       message: "Error from server !!",
+//     });
+//   }
+// };
+
 module.exports = {
-  handleLogin: handleLogin,
-  handleGetAllUsers: handleGetAllUsers,
-  handleCreateUser: handleCreateUser,
-  handleEditUser: handleEditUser,
-  handleDeleteUser: handleDeleteUser,
-  getAllCode: getAllCode,
+  handleLogin,
+  handleGetAllUsers,
+  handleCreateUser,
+  handleEditUser,
+  handleDeleteUser,
+  getAllCode,
+  postChangeUserPW,
+  // postForgotPW
 };

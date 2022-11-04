@@ -223,11 +223,64 @@ const getAllCodeService = (typeInput) => {
   });
 };
 
+const postChangeUserPWService = (inputData) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (
+        !inputData.email ||
+        !inputData.oldPassword ||
+        !inputData.newPassword
+      ) {
+        resolve({ errCode: 1, errMessage: "Missing required parameter !!" });
+      }
+      let userData = {};
+      let isExits = await checkUserEmail(inputData.email);
+      if (isExits) {
+        let user = await db.User.findOne({
+          where: { email: inputData.email },
+          raw: false,
+        });
+        if (user) {
+          let check = bcrypt.compareSync(inputData.oldPassword, user.password);
+          if (check) {
+            let hashPassWord = await hashUserPassword(inputData.newPassword);
+            user.password = hashPassWord;
+
+            user.save();
+
+            userData.errCode = 0;
+            userData.errMessage = "OK";
+
+            delete user.password;
+            userData.user = user;
+          } else {
+            userData.errCode = 3;
+            userData.errMessage = "Password is wrong!!";
+          }
+        } else {
+          userData.errCode = 2;
+          userData.errMessage = "User is not found!!";
+        }
+      } else {
+        userData.errCode = 4;
+        userData.errMessage = "User is not exits. Please try other email!!";
+      }
+      resolve(userData);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+// const postForgotPWService =
+
 module.exports = {
-  handleUserLogin: handleUserLogin,
-  getAllUsers: getAllUsers,
-  createUser: createUser,
-  deleteUser: deleteUser,
-  editUser: editUser,
-  getAllCodeService: getAllCodeService,
+  handleUserLogin,
+  getAllUsers,
+  createUser,
+  deleteUser,
+  editUser,
+  getAllCodeService,
+  postChangeUserPWService,
+  // postForgotPWService
 };
