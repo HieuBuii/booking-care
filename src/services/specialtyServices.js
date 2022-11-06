@@ -4,7 +4,8 @@ const createSpecialtyService = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (
-        !inputData.name ||
+        !inputData.nameVi ||
+        !inputData.nameEn ||
         !inputData.contentHTML ||
         !inputData.contentMarkdown ||
         !inputData.image
@@ -12,7 +13,8 @@ const createSpecialtyService = (inputData) => {
         resolve({ errCode: 1, errMessage: "Missing required parameter !!" });
       } else {
         await db.Specialty.create({
-          name: inputData.name,
+          nameVi: inputData.nameVi,
+          nameEn: inputData.nameEn,
           contentHTML: inputData.contentHTML,
           contentMarkdown: inputData.contentMarkdown,
           image: inputData.image,
@@ -54,7 +56,8 @@ const editSpecialtyService = (data) => {
     try {
       if (
         !data.id ||
-        !data.name ||
+        !data.nameVi ||
+        !data.nameEn ||
         !data.image ||
         !data.contentHTML ||
         !data.contentMarkdown
@@ -69,7 +72,8 @@ const editSpecialtyService = (data) => {
           raw: false,
         });
         if (specialty) {
-          specialty.name = data.name;
+          specialty.nameVi = data.nameVi;
+          specialty.nameEn = data.nameEn;
           specialty.image = data.image;
           specialty.contentHTML = data.contentHTML;
           specialty.contentMarkdown = data.contentMarkdown;
@@ -125,9 +129,63 @@ const deleteSpecialtyService = (idSpecialty) => {
   });
 };
 
+const getSpecialyByIdService = (id, location) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!id || !location) {
+        resolve({
+          errCode: 1,
+          message: "Missing required parameter !!",
+        });
+      } else {
+        let data = {};
+        if (location === "ALL") {
+          data = await db.Specialty.findAll({
+            where: { id: id },
+            attributes: ["contentHTML", "contentMarkdown"],
+            include: [
+              {
+                model: db.Doctor_info,
+                as: "doctorInfoData",
+                attributes: ["doctorId", "proviceId"],
+              },
+            ],
+            raw: false,
+            nest: true,
+          });
+        } else {
+          data = await db.Specialty.findAll({
+            where: { id: id },
+            attributes: ["contentHTML", "contentMarkdown"],
+            include: [
+              {
+                model: db.Doctor_info,
+                where: { proviceId: location },
+                as: "doctorInfoData",
+                attributes: ["doctorId", "proviceId"],
+              },
+            ],
+            raw: false,
+            nest: true,
+          });
+        }
+
+        resolve({
+          errCode: 0,
+          data: data,
+        });
+      }
+    } catch (e) {
+      console.log(e);
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createSpecialtyService,
   getAllSpecialyService,
   editSpecialtyService,
   deleteSpecialtyService,
+  getSpecialyByIdService,
 };

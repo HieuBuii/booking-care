@@ -1,6 +1,5 @@
 import db from "../models/index";
 import _, { reject } from "lodash";
-import e from "express";
 require("dotenv").config();
 
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
@@ -70,7 +69,9 @@ const saveInfoDoctorService = (inputData) => {
         !inputData.proviceId ||
         !inputData.nameClinic ||
         !inputData.addressClinic ||
-        !inputData.note
+        !inputData.note ||
+        !inputData.specialtyId
+        // ||!inputData.clinicId
       ) {
         resolve({ errCode: 1, errMessage: "Missing required parameter !!" });
       } else {
@@ -107,6 +108,8 @@ const saveInfoDoctorService = (inputData) => {
             nameClinic: inputData.nameClinic,
             addressClinic: inputData.addressClinic,
             note: inputData.note,
+            clinicId: inputData.clinicId,
+            specialtyId: inputData.specialtyId,
           });
         } else {
           //update
@@ -116,11 +119,13 @@ const saveInfoDoctorService = (inputData) => {
             (infoDoctor.nameClinic = inputData.nameClinic),
             (infoDoctor.addressClinic = inputData.addressClinic),
             (infoDoctor.note = inputData.note),
-            await infoDoctor.save();
+            (infoDoctor.clinicId = inputData.clinicId),
+            (infoDoctor.specialtyId = inputData.specialtyId);
+          await infoDoctor.save();
         }
         resolve({
           errCode: 0,
-          message: "Create user successed !!",
+          message: "Create doctor's info successed !!",
         });
       }
     } catch (e) {

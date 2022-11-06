@@ -48,6 +48,7 @@ let initWebRoutes = (app) => {
   router.get("/api/get-all-specialty", specialtyController.getAllSpecialy);
   router.put("/api/edit-specialty", specialtyController.editSpecialty);
   router.delete("/api/delete-specialty", specialtyController.deleteSpecialty);
+  router.get("/api/specialty-by-id", specialtyController.getSpecialyById);
 
   return app.use("/", router);
 };
