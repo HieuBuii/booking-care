@@ -12,13 +12,16 @@ module.exports = {
         type: Sequelize.STRING,
       },
       address: {
-        type: Sequelize.INTEGER,
-      },
-      description: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
       },
       image: {
-        type: Sequelize.STRING,
+        type: Sequelize.Sequelize.BLOB("long"),
+      },
+      contentHTML: {
+        type: Sequelize.TEXT,
+      },
+      contentMarkdown: {
+        type: Sequelize.TEXT,
       },
       createdAt: {
         allowNull: false,

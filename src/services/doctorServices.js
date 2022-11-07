@@ -70,8 +70,8 @@ const saveInfoDoctorService = (inputData) => {
         !inputData.nameClinic ||
         !inputData.addressClinic ||
         !inputData.note ||
-        !inputData.specialtyId
-        // ||!inputData.clinicId
+        !inputData.specialtyId ||
+        !inputData.clinicId
       ) {
         resolve({ errCode: 1, errMessage: "Missing required parameter !!" });
       } else {
