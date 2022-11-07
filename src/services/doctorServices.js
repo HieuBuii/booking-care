@@ -67,8 +67,8 @@ const saveInfoDoctorService = (inputData) => {
         !inputData.priceId ||
         !inputData.paymentId ||
         !inputData.proviceId ||
-        !inputData.nameClinic ||
-        !inputData.addressClinic ||
+        // !inputData.nameClinic ||
+        // !inputData.addressClinic ||
         !inputData.note ||
         !inputData.specialtyId ||
         !inputData.clinicId
@@ -105,8 +105,8 @@ const saveInfoDoctorService = (inputData) => {
             priceId: inputData.priceId,
             paymentId: inputData.paymentId,
             proviceId: inputData.proviceId,
-            nameClinic: inputData.nameClinic,
-            addressClinic: inputData.addressClinic,
+            // nameClinic: inputData.nameClinic,
+            // addressClinic: inputData.addressClinic,
             note: inputData.note,
             clinicId: inputData.clinicId,
             specialtyId: inputData.specialtyId,
@@ -116,8 +116,8 @@ const saveInfoDoctorService = (inputData) => {
           (infoDoctor.priceId = inputData.priceId),
             (infoDoctor.paymentId = inputData.paymentId),
             (infoDoctor.proviceId = inputData.proviceId),
-            (infoDoctor.nameClinic = inputData.nameClinic),
-            (infoDoctor.addressClinic = inputData.addressClinic),
+            // (infoDoctor.nameClinic = inputData.nameClinic),
+            // (infoDoctor.addressClinic = inputData.addressClinic),
             (infoDoctor.note = inputData.note),
             (infoDoctor.clinicId = inputData.clinicId),
             (infoDoctor.specialtyId = inputData.specialtyId);
@@ -178,6 +178,11 @@ const getInfoDoctorService = (id) => {
                   model: db.Allcode,
                   as: "paymentTypeData",
                   attributes: ["valueVi", "valueEn"],
+                },
+                {
+                  model: db.Clinic,
+                  as: "doctorClinicData",
+                  attributes: ["name", "address"],
                 },
               ],
             },
@@ -316,6 +321,11 @@ const getExtraDoctorInfoService = (doctorId) => {
               model: db.Allcode,
               as: "provinceTypeData",
               attributes: ["valueVi", "valueEn"],
+            },
+            {
+              model: db.Clinic,
+              as: "doctorClinicData",
+              attributes: ["name", "address"],
             },
           ],
           raw: false,

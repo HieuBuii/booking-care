@@ -65,69 +65,6 @@ let arr = [
   "y",
 ];
 
-// const randomPW = () => {
-//   let arr = [
-//     1,
-//     2,
-//     3,
-//     4,
-//     5,
-//     6,
-//     7,
-//     8,
-//     9,
-//     0,
-//     "A",
-//     "B",
-//     "C",
-//     "D",
-//     "E",
-//     "F",
-//     "J",
-//     "K",
-//     "G",
-//     "H",
-//     "M",
-//     "N",
-//     "Q",
-//     "P",
-//     "R",
-//     "L",
-//     "T",
-//     "Y",
-//     "U",
-//     "I",
-//     "O",
-//     "a",
-//     "b",
-//     "c",
-//     "d",
-//     "e",
-//     "f",
-//     "g",
-//     "h",
-//     "j",
-//     "k",
-//     "l",
-//     "m",
-//     "n",
-//     "v",
-//     "z",
-//     "x",
-//     "X",
-//     "o",
-//     "p",
-//     "i",
-//     "u",
-//     "y",
-//   ];
-//   let randomPW = "";
-//   for (let i = 0; i < 6; i++) {
-//     randomPW += arr[Math.floor(Math.random() * arr.length)];
-//   }
-//   return randomPW;
-// };
-
 let hashUserPassword = async (password) => {
   return new Promise(async (resolve, reject) => {
     try {
