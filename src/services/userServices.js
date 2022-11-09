@@ -1,8 +1,10 @@
 import db from "../models/index";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 const salt = bcrypt.genSaltSync(10);
 import { v4 as uuidv4 } from "uuid";
 import mailServices from "./mailServices";
+require("dotenv").config();
 
 const buildURLVerifyEmail = (userEmail, token) => {
   let result = `${process.env.URL_REACT}/forgot-password?token=${token}&email=${userEmail}`;
@@ -97,10 +99,20 @@ let handleUserLogin = async (email, password) => {
         if (user) {
           let check = bcrypt.compareSync(password, user.password);
           if (check) {
+            let token = jwt.sign(
+              {
+                id: user.id,
+                role: user.roleId,
+              },
+              process.env.JWT_ACCESS_KEY,
+              { expiresIn: "10d" }
+            );
+
             userData.errCode = 0;
             userData.errMessage = "OK";
 
             delete user.password;
+            user.accessToken = token;
             userData.user = user;
           } else {
             userData.errCode = 3;
