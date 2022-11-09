@@ -16,7 +16,11 @@ const savePatientBookingService = (inputData) => {
         !inputData.fullName ||
         !inputData.date ||
         !inputData.email ||
-        !inputData.doctorId
+        !inputData.doctorId ||
+        !inputData.phonenumber ||
+        !inputData.reason ||
+        !inputData.gender ||
+        !inputData.address
       ) {
         resolve({
           errCode: 1,
@@ -40,6 +44,10 @@ const savePatientBookingService = (inputData) => {
           defaults: {
             email: inputData.email,
             roleId: "R3",
+            firstName: inputData.fullName,
+            address: inputData.address,
+            phonenumber: inputData.phonenumber,
+            gender: inputData.gender,
           },
         });
         if (user && user[0]) {
@@ -57,6 +65,7 @@ const savePatientBookingService = (inputData) => {
               date: inputData.date,
               timeType: inputData.timeType,
               token: token,
+              reason: inputData.reason,
             },
           });
         }

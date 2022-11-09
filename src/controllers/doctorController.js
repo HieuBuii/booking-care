@@ -109,6 +109,45 @@ const deleteScheduleDoctor = async (req, res) => {
   }
 };
 
+const getAppointmentDoctor = async (req, res) => {
+  try {
+    let data = await doctorServices.getAppointmentDoctorService(
+      req.query.doctorId,
+      req.query.date
+    );
+    return res.status(200).json(data);
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      errCode: -1,
+      message: "Error from server !!",
+    });
+  }
+};
+
+const sendMailToCus = async (req, res) => {
+  try {
+    let data = await doctorServices.sendMailToCusService(req.body);
+    return res.status(200).json(data);
+  } catch (e) {
+    return res.status(200).json({
+      errCode: -1,
+      message: "Error from server !!",
+    });
+  }
+};
+const confirmAppointmentSucceed = async (req, res) => {
+  try {
+    let data = await doctorServices.confirmAppointmentSucceedService(req.body);
+    return res.status(200).json(data);
+  } catch (e) {
+    return res.status(200).json({
+      errCode: -1,
+      message: "Error from server !!",
+    });
+  }
+};
+
 module.exports = {
   getTopDoctorForHome,
   getAllDoctors,
@@ -118,4 +157,7 @@ module.exports = {
   getScheduleDoctor,
   getExtraDoctorInfo,
   deleteScheduleDoctor,
+  getAppointmentDoctor,
+  sendMailToCus,
+  confirmAppointmentSucceed,
 };

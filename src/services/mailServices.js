@@ -119,8 +119,52 @@ const buildContentGiveNewPW = (dataSend) => {
   return content;
 };
 
+const sendEmailToCustomer = async (dataSend) => {
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.GMAIL_USER_NAME, // generated ethereal user
+      pass: process.env.GMAIL_PASSWORD, // generated ethereal password
+    },
+  });
+
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: '"Health Care" <bt.hieuBVT145@gmail.com>', // sender address
+    to: dataSend.email, // list of receivers
+    subject: "Về lịch hẹn khám bệnh ✔", // Subject line
+    html: buildContentsendEmailToCustomer(dataSend),
+    attachments: [
+      {
+        filename: "Dinhkem.png",
+        content: dataSend.file.split("base64,")[1],
+        encoding: "base64",
+      },
+    ],
+  });
+};
+
+const buildContentsendEmailToCustomer = (dataSend) => {
+  let content = `<h3>Xin chào ${dataSend.fullNamePatient}</h3>
+    <p>Về lịch hẹn khám bệnh:</p>
+    <ul>
+        <li><b>Ngày: ${dataSend.dateAppointment}.</b></li>
+        <li><b>Thời gian: ${dataSend.timeAppointment}.</b></li>
+        <li><b>Doctor: ${dataSend.nameDoctor}.</b></li>
+    </ul>
+    </br>
+    <p>Lời nhắn của bác sĩ và thông tin bổ sung kèm theo trong file đính kèm:</p>
+    <p>${dataSend.message}</p>
+`;
+  return content;
+};
+
 module.exports = {
   sendEmailConfirmBooking,
   sendEmailConfirmForgotPW,
   sendEmailGiveNewPW,
+  sendEmailToCustomer,
 };

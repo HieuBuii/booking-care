@@ -38,6 +38,15 @@ let initWebRoutes = (app) => {
     doctorController.deleteScheduleDoctor
   );
   router.get("/api/extra-doctor-info", doctorController.getExtraDoctorInfo);
+  router.get(
+    "/api/get-appointment-doctor",
+    doctorController.getAppointmentDoctor
+  );
+  router.post("/api/send-mail-to-customers", doctorController.sendMailToCus);
+  router.post(
+    "/api/confirm-succeed-appointment",
+    doctorController.confirmAppointmentSucceed
+  );
 
   router.post("/api/patient-booking", patientController.savePatientBooking);
   router.post(

@@ -26,6 +26,12 @@ module.exports = {
       timeType: {
         type: Sequelize.STRING,
       },
+      reason: {
+        type: Sequelize.TEXT,
+      },
+      file: {
+        type: Sequelize.TEXT,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

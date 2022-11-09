@@ -1,6 +1,7 @@
 import db from "../models/index";
-import _, { reject } from "lodash";
+import _ from "lodash";
 require("dotenv").config();
+import mailServices from "./mailServices";
 
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 
@@ -377,6 +378,164 @@ const deleteScheduleDoctorService = (idSchedule) => {
   });
 };
 
+const getAppointmentDoctorService = (doctorId, date) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!doctorId || !date) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters !!",
+        });
+      } else {
+        let data = await db.Booking.findAll({
+          where: {
+            doctorId: doctorId,
+            date: date,
+            statusId: "S2",
+          },
+          include: [
+            {
+              model: db.User,
+              as: "bookingData",
+              attributes: [
+                "firstName",
+                "phonenumber",
+                "address",
+                "gender",
+                "email",
+              ],
+              include: [
+                {
+                  model: db.Allcode,
+                  as: "genderData",
+                  attributes: ["valueVi", "valueEn"],
+                },
+              ],
+            },
+            {
+              model: db.Allcode,
+              as: "timeBookingData",
+              attributes: ["valueVi", "valueEn"],
+            },
+          ],
+          raw: false,
+          nest: true,
+        });
+        if (!data) {
+          data = [];
+        }
+        resolve({
+          errCode: 0,
+          data: data,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const sendMailToCusService = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (
+        !data.email ||
+        !data.doctorId ||
+        !data.patientId ||
+        !data.fullNamePatient ||
+        !data.dateAppointment ||
+        !data.timeAppointment ||
+        !data.date ||
+        !data.timeType
+      ) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters !!",
+        });
+      } else {
+        let doctor = await db.User.findOne({
+          where: { id: data.doctorId },
+          attributes: ["firstName", "lastName"],
+        });
+        if (doctor) {
+          await mailServices.sendEmailToCustomer({
+            email: data.email,
+            nameDoctor: `${doctor.lastName} ${doctor.firstName}`,
+            fullNamePatient: data.fullNamePatient,
+            dateAppointment: data.dateAppointment,
+            timeAppointment: data.timeAppointment,
+            file: data.bill,
+            message: data.message,
+          });
+          let booking = await db.Booking.findOne({
+            where: {
+              doctorId: data.doctorId,
+              patientId: data.patientId,
+              date: data.date,
+              timeType: data.timeType,
+            },
+            raw: false,
+          });
+          if (booking) {
+            booking.file = data.bill;
+            await booking.save();
+          }
+          resolve({
+            errCode: 0,
+            message: "OK!!",
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            message: "User is not found !!",
+          });
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      reject(e);
+    }
+  });
+};
+
+const confirmAppointmentSucceedService = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.doctorId || !data.date || !data.timeType || !data.patientId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters !!",
+        });
+      } else {
+        let appointment = await db.Booking.findOne({
+          where: {
+            doctorId: data.doctorId,
+            patientId: data.patientId,
+            date: data.date,
+            timeType: data.timeType,
+          },
+          raw: false,
+        });
+        if (appointment) {
+          (appointment.statusId = "S3"), await appointment.save();
+          resolve({
+            errCode: 0,
+            message: "OK!!",
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            message: "User is not found !!",
+          });
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   getTopDoctorService,
   getAllDoctorsService,
@@ -386,4 +545,7 @@ module.exports = {
   getScheduleDoctorService,
   getExtraDoctorInfoService,
   deleteScheduleDoctorService,
+  getAppointmentDoctorService,
+  sendMailToCusService,
+  confirmAppointmentSucceedService,
 };
