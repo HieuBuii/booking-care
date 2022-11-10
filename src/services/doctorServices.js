@@ -219,16 +219,10 @@ const saveCreateScheduleService = (data) => {
         });
       } else {
         let schedule = data.arrSchedule;
-        if (schedule && schedule.length > 0) {
-          schedule = schedule.map((item) => {
-            item.maxNumber = MAX_NUMBER_SCHEDULE;
-            return item;
-          });
-        }
 
         let isExits = await db.Schedule.findAll({
           where: { doctorId: data.doctorId, date: data.formatDate },
-          attributes: ["timeType", "date", "maxNumber", "doctorId"],
+          attributes: ["timeType", "date", "doctorId"],
         });
 
         let toCreate = _.differenceWith(schedule, isExits, (a, b) => {
@@ -467,19 +461,6 @@ const sendMailToCusService = (data) => {
             file: data.bill,
             message: data.message,
           });
-          let booking = await db.Booking.findOne({
-            where: {
-              doctorId: data.doctorId,
-              patientId: data.patientId,
-              date: data.date,
-              timeType: data.timeType,
-            },
-            raw: false,
-          });
-          if (booking) {
-            booking.file = data.bill;
-            await booking.save();
-          }
           resolve({
             errCode: 0,
             message: "OK!!",

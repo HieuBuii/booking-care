@@ -1,27 +1,29 @@
 import db from "../models/index";
 
-const createClinicService = (inputData) => {
+const createHandBookService = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (
+        !inputData.userId ||
         !inputData.name ||
-        !inputData.address ||
+        !inputData.author ||
         !inputData.contentHTML ||
         !inputData.contentMarkdown ||
         !inputData.image
       ) {
         resolve({ errCode: 1, errMessage: "Missing required parameter !!" });
       } else {
-        await db.Clinic.create({
+        await db.Handbook.create({
+          userId: inputData.userId,
           name: inputData.name,
-          address: inputData.address,
+          author: inputData.author,
           contentHTML: inputData.contentHTML,
           contentMarkdown: inputData.contentMarkdown,
           image: inputData.image,
         });
         resolve({
           errCode: 0,
-          message: "Create clinic successed !!",
+          message: "Create handbook successed !!",
         });
       }
     } catch (e) {
@@ -30,12 +32,14 @@ const createClinicService = (inputData) => {
   });
 };
 
-const getAllClinicService = () => {
+const getAllHandBookService = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      let clinics = await db.Clinic.findAll({ order: [["createdAt", "DESC"]] });
-      if (clinics && clinics.length > 0) {
-        clinics.map((item) => {
+      let handbooks = await db.Handbook.findAll({
+        order: [["createdAt", "DESC"]],
+      });
+      if (handbooks && handbooks.length > 0) {
+        handbooks.map((item) => {
           item.image = new Buffer(item.image, "base64").toString("binary");
           return item;
         });
@@ -43,7 +47,7 @@ const getAllClinicService = () => {
 
       resolve({
         errCode: 0,
-        data: clinics,
+        data: handbooks,
       });
     } catch (e) {
       reject(e);
@@ -51,13 +55,13 @@ const getAllClinicService = () => {
   });
 };
 
-const editClinicService = (data) => {
+const editHandBookService = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (
         !data.id ||
         !data.name ||
-        !data.address ||
+        !data.author ||
         !data.image ||
         !data.contentHTML ||
         !data.contentMarkdown
@@ -67,27 +71,27 @@ const editClinicService = (data) => {
           errMessage: "Missing required parameters!!",
         });
       } else {
-        let clinic = await db.Clinic.findOne({
+        let handbook = await db.Handbook.findOne({
           where: { id: data.id },
           raw: false,
         });
-        if (clinic) {
-          clinic.name = data.name;
-          clinic.address = data.address;
-          clinic.image = data.image;
-          clinic.contentHTML = data.contentHTML;
-          clinic.contentMarkdown = data.contentMarkdown;
+        if (handbook) {
+          handbook.name = data.name;
+          handbook.author = data.author;
+          handbook.image = data.image;
+          handbook.contentHTML = data.contentHTML;
+          handbook.contentMarkdown = data.contentMarkdown;
 
-          await clinic.save();
+          await handbook.save();
 
           resolve({
             errCode: 0,
-            message: "Update clinic successed!!",
+            message: "Update handbook successed!!",
           });
         } else {
           resolve({
             errCode: 2,
-            errMessage: "Clinic is not found!!",
+            errMessage: "Handbook is not found!!",
           });
         }
       }
@@ -97,29 +101,29 @@ const editClinicService = (data) => {
   });
 };
 
-const deleteClinicService = (idClinic) => {
+const deleteHandBookService = (idHandbook) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!idClinic) {
+      if (!idHandbook) {
         resolve({
           errCode: 1,
           errMessage: "Missing required parameters!!",
         });
       } else {
-        let clinic = await db.Clinic.findOne({
-          where: { id: idClinic },
+        let handbook = await db.Handbook.findOne({
+          where: { id: idHandbook },
           raw: false,
         });
-        if (clinic) {
-          await clinic.destroy();
+        if (handbook) {
+          await handbook.destroy();
           resolve({
             errCode: 0,
-            message: "Delete clinic successed!!",
+            message: "Delete handbook successed!!",
           });
         } else {
           resolve({
             errCode: 2,
-            errMessage: "Clinic is not found!!",
+            errMessage: "Handbook is not found!!",
           });
         }
       }
@@ -129,7 +133,7 @@ const deleteClinicService = (idClinic) => {
   });
 };
 
-const getClinicByIdService = (id) => {
+const getHandBookByIdService = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
@@ -139,18 +143,11 @@ const getClinicByIdService = (id) => {
         });
       } else {
         let data = {};
-        data = await db.Clinic.findAll({
+        data = await db.Handbook.findOne({
           where: { id: id },
           attributes: {
             exclude: ["createdAt", "updatedAt", "image"],
           },
-          include: [
-            {
-              model: db.Doctor_info,
-              as: "doctorClinicData",
-              attributes: ["doctorId"],
-            },
-          ],
           raw: false,
           nest: true,
         });
@@ -168,9 +165,9 @@ const getClinicByIdService = (id) => {
 };
 
 module.exports = {
-  createClinicService,
-  getAllClinicService,
-  editClinicService,
-  deleteClinicService,
-  getClinicByIdService,
+  createHandBookService,
+  getAllHandBookService,
+  editHandBookService,
+  deleteHandBookService,
+  getHandBookByIdService,
 };

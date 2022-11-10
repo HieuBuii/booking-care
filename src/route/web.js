@@ -6,6 +6,7 @@ import doctorController from "../controllers/doctorController";
 import patientController from "../controllers/patientController";
 import specialtyController from "../controllers/specialtyController";
 import clinicController from "../controllers/clinicController";
+import handBookController from "../controllers/handBookController";
 
 let router = express.Router();
 
@@ -24,6 +25,7 @@ let initWebRoutes = (app) => {
     middlewareController.verifyTokenAdmin,
     userController.handleGetAllUsers
   );
+  router.get("/api/home-get-all-users", userController.handleGetAllUsers);
   router.post(
     "/api/create-user",
     middlewareController.verifyTokenAdmin,
@@ -50,6 +52,7 @@ let initWebRoutes = (app) => {
     middlewareController.verifyTokenAdmin,
     doctorController.getAllDoctors
   );
+  router.get("/api/home-get-all-doctocs", doctorController.getAllDoctors);
   router.post("/api/creat-info-doctor", doctorController.saveInfoDoctor);
   router.get("/api/get-info-doctor", doctorController.getInfoDoctor);
   router.post("/api/save-schedule", doctorController.saveCreateSchedule);
@@ -104,6 +107,12 @@ let initWebRoutes = (app) => {
   router.put("/api/edit-clinic", clinicController.editClinic);
   router.delete("/api/delete-clinic", clinicController.deleteClinic);
   router.get("/api/get-clinic-by-id", clinicController.getClinicById);
+
+  router.post("/api/create-handbook", handBookController.createHandBook);
+  router.get("/api/get-all-handbook", handBookController.getAllHandBook);
+  router.put("/api/edit-handbook", handBookController.editHandBook);
+  router.delete("/api/delete-handbook", handBookController.deleteHandBook);
+  router.get("/api/get-handbook-by-id", handBookController.getHandBookById);
 
   return app.use("/", router);
 };

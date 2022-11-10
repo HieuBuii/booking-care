@@ -29,9 +29,6 @@ module.exports = {
       reason: {
         type: Sequelize.TEXT,
       },
-      file: {
-        type: Sequelize.TEXT,
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

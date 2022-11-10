@@ -33,7 +33,9 @@ const createSpecialtyService = (inputData) => {
 const getAllSpecialyService = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      let specialties = await db.Specialty.findAll();
+      let specialties = await db.Specialty.findAll({
+        order: [["createdAt", "DESC"]],
+      });
       if (specialties && specialties.length > 0) {
         specialties.map((item) => {
           item.image = new Buffer(item.image, "base64").toString("binary");
