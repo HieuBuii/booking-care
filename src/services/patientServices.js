@@ -45,9 +45,11 @@ const savePatientBookingService = (inputData) => {
             email: inputData.email,
             roleId: "R3",
             firstName: inputData.fullName,
+            lastName: "None",
             address: inputData.address,
             phonenumber: inputData.phonenumber,
             gender: inputData.gender,
+            positionId: "P0",
           },
         });
         if (user && user[0]) {
