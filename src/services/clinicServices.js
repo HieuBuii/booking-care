@@ -36,7 +36,7 @@ const getAllClinicService = () => {
       let clinics = await db.Clinic.findAll({ order: [["createdAt", "DESC"]] });
       if (clinics && clinics.length > 0) {
         clinics.map((item) => {
-          item.image = new Buffer(item.image, "base64").toString("binary");
+          item.image = Buffer.from(item.image, "base64").toString("binary");
           return item;
         });
       }

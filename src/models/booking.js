@@ -19,6 +19,11 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: "keyMap",
         as: "timeBookingData",
       });
+      Booking.belongsTo(models.Allcode, {
+        foreignKey: "statusId",
+        targetKey: "keyMap",
+        as: "statusData",
+      });
     }
   }
   Booking.init(
@@ -30,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       timeType: DataTypes.STRING,
       token: DataTypes.STRING,
       reason: DataTypes.TEXT,
+      image: DataTypes.TEXT,
     },
     {
       sequelize,

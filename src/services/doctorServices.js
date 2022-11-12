@@ -1,9 +1,9 @@
 import db from "../models/index";
 import _ from "lodash";
-require("dotenv").config();
 import mailServices from "./mailServices";
 
-const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 
 const getTopDoctorService = (limit) => {
   return new Promise(async (resolve, reject) => {
@@ -193,7 +193,7 @@ const getInfoDoctorService = (id) => {
         });
 
         if (data && data.image) {
-          data.image = new Buffer(data.image, "base64").toString("binary");
+          data.image = Buffer.from(data.image, "base64").toString("binary");
         }
         if (!data) data = {};
 
@@ -429,6 +429,71 @@ const getAppointmentDoctorService = (doctorId, date) => {
   });
 };
 
+const getHistoryDoctorService = (doctorId, date) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!doctorId || !date) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters !!",
+        });
+      } else {
+        let data = await db.Booking.findAll({
+          where: {
+            doctorId: doctorId,
+            date: date,
+            statusId: { [Op.or]: ["S3", "S4"] },
+          },
+          attributes: {
+            exclude: ["image"],
+          },
+          include: [
+            {
+              model: db.User,
+              as: "bookingData",
+              attributes: [
+                "firstName",
+                "phonenumber",
+                "address",
+                "gender",
+                "email",
+              ],
+              include: [
+                {
+                  model: db.Allcode,
+                  as: "genderData",
+                  attributes: ["valueVi", "valueEn"],
+                },
+              ],
+            },
+            {
+              model: db.Allcode,
+              as: "timeBookingData",
+              attributes: ["valueVi", "valueEn"],
+            },
+            {
+              model: db.Allcode,
+              as: "statusData",
+              attributes: ["valueVi", "valueEn"],
+            },
+          ],
+          raw: false,
+          nest: true,
+        });
+        if (!data) {
+          data = [];
+        }
+        resolve({
+          errCode: 0,
+          data: data,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const sendMailToCusService = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -461,6 +526,18 @@ const sendMailToCusService = (data) => {
             file: data.bill,
             message: data.message,
           });
+          let booking = await db.Booking.findOne({
+            where: {
+              doctorId: data.doctorId,
+              patientId: data.patientId,
+              date: data.date,
+              timeType: data.timeType,
+            },
+            raw: false,
+          });
+          if (booking) {
+            (booking.image = data.bill), await booking.save();
+          }
           resolve({
             errCode: 0,
             message: "OK!!",
@@ -517,6 +594,44 @@ const confirmAppointmentSucceedService = (data) => {
   });
 };
 
+const cancelAppointmentService = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.doctorId || !data.date || !data.timeType || !data.patientId) {
+        resolve({
+          errCode: 1,
+          errMessage: "Missing required parameters !!",
+        });
+      } else {
+        let appointment = await db.Booking.findOne({
+          where: {
+            doctorId: data.doctorId,
+            patientId: data.patientId,
+            date: data.date,
+            timeType: data.timeType,
+          },
+          raw: false,
+        });
+        if (appointment) {
+          (appointment.statusId = "S4"), await appointment.save();
+          resolve({
+            errCode: 0,
+            message: "OK!!",
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            message: "User is not found !!",
+          });
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   getTopDoctorService,
   getAllDoctorsService,
@@ -529,4 +644,6 @@ module.exports = {
   getAppointmentDoctorService,
   sendMailToCusService,
   confirmAppointmentSucceedService,
+  cancelAppointmentService,
+  getHistoryDoctorService,
 };

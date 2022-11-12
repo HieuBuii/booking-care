@@ -38,7 +38,7 @@ const getAllSpecialyService = () => {
       });
       if (specialties && specialties.length > 0) {
         specialties.map((item) => {
-          item.image = new Buffer(item.image, "base64").toString("binary");
+          item.image = Buffer.from(item.image, "base64").toString("binary");
           return item;
         });
       }

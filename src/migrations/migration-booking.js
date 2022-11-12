@@ -29,6 +29,9 @@ module.exports = {
       reason: {
         type: Sequelize.TEXT,
       },
+      image: {
+        type: Sequelize.BLOB("long"),
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
